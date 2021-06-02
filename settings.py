@@ -1,11 +1,10 @@
 """
 Django settings for datachef_assessment project.
 """
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
 SECRET_KEY = 'ff5t-9hz108ip@n+0u)-u)@1*j(c+n8-&nb5r6j6aag9l+n_hd'
 
@@ -47,7 +46,9 @@ ROOT_URLCONF = 'urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            '%s/templates' % BASE_DIR
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -65,8 +66,12 @@ WSGI_APPLICATION = 'wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'datachef',
+        'USER': 'datachef',
+        'PASSWORD': 'datachef',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -78,6 +83,7 @@ USE_L10N = True
 USE_TZ = True
 
 
+STATIC_ROOT = '%s/static' % BASE_DIR
 STATIC_URL = '/static/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
