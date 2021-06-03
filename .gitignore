@@ -3,3 +3,4 @@
 media
 static
 .pipcache
+django.log
