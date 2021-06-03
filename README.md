@@ -8,6 +8,12 @@ Setup
 - change database settings in `settings.py`
 - run `./manage.py migrate`
 
+
+Import datasets
+----------------
+- run `./manage.py run_batch`
+
+
 Tests
 ------
 - run `pytest apps`
