@@ -10,8 +10,11 @@ SECRET_KEY = 'ff5t-9hz108ip@n+0u)-u)@1*j(c+n8-&nb5r6j6aag9l+n_hd'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['datachef.pedroja.tech']
+ALLOWED_HOSTS = ['127.0.0.1', 'datachef.pedroja.tech']
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
 # Application definition
 INSTALLED_APPS = [
