@@ -13,29 +13,26 @@ class HomeView(TemplateView):
     template_name = "banner/index.html"
 
 
-# get_object_or_404
-
 class CampaignDetail(APIView):
     def get(self, request, *args, **kwargs):
-        mode = request.GET.get('mode', 'top10')
-        import ipdb;ipdb.set_trace()
         campaign = get_object_or_404(models.Campaign, pk=kwargs['pk'])
         quarter = utils.get_current_quarter()
         client_ip = request.META['REMOTE_ADDR']
 
         # we could also exclude more banners
         # (e.g. per day, but we'll just exclude the last one seen)
-        banners_seen = models.BannerSeen.objects.filter(address=client_ip) \
-            .order_by('-datetime')[:1]
+        last_banner_seen = models.BannerSeen.objects.filter(address=client_ip) \
+            .order_by('-datetime') \
+            .first()
 
-        if not banners_seen:
-            banners_seen = []
+        if not last_banner_seen:
+            last_banner_seen = []
         else:
-            banners_seen = banners_seen.values_list('banner_id', flat=True)
+            last_banner_seen = [last_banner_seen.banner_id]
 
         banner_ids = models.Click.objects \
             .filter(impression__campaign=campaign, impression__quarter=quarter) \
-            .exclude(impression__banner_id__in=banners_seen) \
+            .exclude(impression__banner_id__in=last_banner_seen) \
             .annotate(total_revenue=Sum('conversions__revenue')) \
             .order_by('total_revenue') \
             .values_list('impression__banner_id', flat=True)[:5]
