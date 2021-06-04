@@ -1,5 +1,7 @@
 from django.db import models
 
+from . import managers
+
 
 class Banner(models.Model):
     banner_id = models.PositiveIntegerField(primary_key=True, unique=True)
@@ -28,7 +30,7 @@ class Click(models.Model):
     banner = models.ForeignKey(Banner, on_delete=models.CASCADE, related_name='clicks', null=True)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='clicks', null=True)
 
-    objects = models.Manager()
+    objects = managers.ClickManager()
 
 
 class Conversion(models.Model):
