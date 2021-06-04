@@ -18,18 +18,12 @@ class Impression(models.Model):
     banner = models.ForeignKey(Banner, on_delete=models.CASCADE, related_name='impressions')
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='impressions')
 
-    class Meta:
-        unique_together = ('quarter', 'banner', 'campaign')
-
     objects = models.Manager()
 
 
 class Click(models.Model):
     click_id = models.PositiveIntegerField(primary_key=True, unique=True)
     impression = models.ForeignKey(Impression, on_delete=models.CASCADE, related_name='clicks')
-
-    class Meta:
-        unique_together = ('click_id', 'impression')
 
     objects = models.Manager()
 
