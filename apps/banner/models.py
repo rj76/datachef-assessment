@@ -45,4 +45,3 @@ class Conversion(models.Model):
 class BannerSeen(models.Model):
     banner = models.ForeignKey(Banner, on_delete=models.CASCADE, related_name='ips', db_index=True)
     address = models.CharField(max_length=50, db_index=True)
-    datetime = models.DateTimeField(auto_now_add=True)
