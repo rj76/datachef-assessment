@@ -2,6 +2,39 @@
 
 {% block content %}
 
-Hoi
+<h1>Campaign page</h1>
+
+<h4>Enter a campaign ID</h4>
+
+<div id="container">
+    <p>
+        <input type="text" data-bind="textInput: campaignId" />&nbsp;
+        <button data-bind="click: submitCapaign">Submit</button>
+    </p>
+
+    <h2>Result</h2>
+
+    <div data-bind="if: hasError">
+        <p>
+            <b>Error:</b> <span data-bind="text: error"></span>
+        </p>
+    </div>
+
+    <div data-bind="ifnot: hasError">
+        <p>
+            <b>Total banners for this campaign:</b> <span data-bind="text: numBanners"></span>
+        </p>
+        <p>
+            <b>Scenario:</b> <span data-bind="text: scenario"></span>
+        </p>
+        <div data-bind="if: hasBanners">
+            <div data-bind="foreach: banners">
+                <p>
+                    <img data-bind="attr: { src: '/static/banner/img/banners/image_' + $data + '.png' }">
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

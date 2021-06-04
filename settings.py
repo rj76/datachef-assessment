@@ -26,7 +26,6 @@ INSTALLED_APPS = [
 
     'debug_toolbar',
     'rest_framework',
-    'django_js_reverse',
     'django_extensions',
 
     'apps.banner',
