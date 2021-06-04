@@ -17,6 +17,7 @@ class Batch:
 
     def import_impressions(self, quarter):
         file = '%s/data/%d/impressions_%d.csv' % (settings.BASE_DIR, quarter, quarter)
+        num_exist = 0
 
         with open(file) as csvfile:
             reader = csv.reader(csvfile)
@@ -31,11 +32,18 @@ class Batch:
                     campaign_id=as_dict['campaign_id']
                 )
 
-                models.Impression.objects.get_or_create(
+                _, created = models.Impression.objects.get_or_create(
                     quarter=quarter,
                     banner=banner,
                     campaign=campaign
                 )
+
+                if not created:
+                    num_exist += 1
+                    logger.debug('impression with banner_id %s and campaign_id %s already exists'
+                                 % (as_dict['banner_id'], as_dict['campaign_id']))
+
+        logger.info('%d double impressions' % num_exist)
 
     def import_clicks(self, quarter):
         file = '%s/data/%d/clicks_%d.csv' % (settings.BASE_DIR, quarter, quarter)
