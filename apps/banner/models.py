@@ -23,6 +23,7 @@ class Impression(models.Model):
 
 class Click(models.Model):
     click_id = models.PositiveIntegerField(primary_key=True, unique=True)
+    quarter = models.PositiveSmallIntegerField(db_index=True, null=True)
     num_impressions = models.PositiveIntegerField(default=0)
     banner = models.ForeignKey(Banner, on_delete=models.CASCADE, related_name='clicks', null=True)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='clicks', null=True)
