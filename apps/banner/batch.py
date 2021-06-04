@@ -17,7 +17,6 @@ class Batch:
 
     def import_impressions(self, quarter):
         file = '%s/data/%d/impressions_%d.csv' % (settings.BASE_DIR, quarter, quarter)
-        num_exist = 0
 
         with open(file) as csvfile:
             reader = csv.reader(csvfile)
@@ -32,21 +31,16 @@ class Batch:
                     campaign_id=as_dict['campaign_id']
                 )
 
-                _, created = models.Impression.objects.get_or_create(
+                models.Impression.objects.create(
                     quarter=quarter,
                     banner=banner,
                     campaign=campaign
                 )
 
-                if not created:
-                    num_exist += 1
-                    logger.debug('impression with banner_id %s and campaign_id %s already exists'
-                                 % (as_dict['banner_id'], as_dict['campaign_id']))
-
-        logger.info('%d double impressions' % num_exist)
 
     def import_clicks(self, quarter):
         file = '%s/data/%d/clicks_%d.csv' % (settings.BASE_DIR, quarter, quarter)
+        num_exist = 0
 
         with open(file) as csvfile:
             reader = csv.reader(csvfile)
@@ -62,13 +56,20 @@ class Batch:
                     campaign=campaign
                 )
 
-                models.Click.objects.get_or_create(
+                _, created = models.Click.objects.get_or_create(
                     click_id=as_dict['click_id'],
                     impression=impression
                 )
 
+                if not created:
+                    num_exist += 1
+                    logger.debug('duplicate click_id: %s' % as_dict['click_id'])
+
+        logger.info('%d duplicate clicks' % num_exist)
+
     def import_conversions(self, quarter):
         file = '%s/data/%d/conversions_%d.csv' % (settings.BASE_DIR, quarter, quarter)
+        num_exist = 0
 
         with open(file) as csvfile:
             reader = csv.reader(csvfile)
@@ -77,8 +78,14 @@ class Batch:
                 as_dict = dict(zip(headers, row))
                 click = models.Click.objects.get(click_id=as_dict['click_id'])
 
-                conversion, _ = models.Conversion.objects.get_or_create(
+                _, created = models.Conversion.objects.get_or_create(
                     conversion_id=as_dict['conversion_id'],
                     click=click,
                     revenue=float(as_dict['revenue'])
                 )
+
+                if not created:
+                    num_exist += 1
+                    logger.debug('duplicate conversion_id: %s' % as_dict['conversion_id'])
+
+        logger.info('%d duplicate conversions' % num_exist)
