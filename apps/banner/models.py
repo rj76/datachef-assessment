@@ -23,7 +23,7 @@ class Impression(models.Model):
 
 class Click(models.Model):
     click_id = models.PositiveIntegerField(primary_key=True, unique=True)
-    impression = models.ForeignKey(Impression, on_delete=models.CASCADE, related_name='clicks')
+    num_impressions = models.PositiveIntegerField(default=0)
 
     objects = models.Manager()
 
