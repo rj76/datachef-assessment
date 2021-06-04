@@ -1,4 +1,20 @@
-from django.db.models import Manager, Sum
+from django.db.models import Manager, Sum, Count
+
+
+class BannerManager(Manager):
+    def get_random_banner_ids(self, count, exclude_banner_ids):
+        return self.get_queryset() \
+            .exclude(banner_id__in=exclude_banner_ids) \
+            .order_by('?') \
+            .values_list('banner_id', flat=True)[:count]
+
+    def get_banner_ids_by_click_count(self, exclude_banner_ids):
+        return self.get_queryset() \
+            .exclude(banner_id__in=exclude_banner_ids) \
+            .annotate(count=Count('clicks')) \
+            .filter(count__gt=0) \
+            .order_by('-count') \
+            .values_list('banner_id', flat=True)
 
 
 class ClickManager(Manager):
@@ -14,5 +30,13 @@ class ClickManager(Manager):
             .exclude(banner_id__in=banners_seen) \
             .values('banner_id').distinct() \
             .annotate(total_revenue=Sum('conversions__revenue')) \
-            .order_by('total_revenue') \
+            .order_by('-total_revenue') \
             .values_list('banner_id', flat=True)[:10]
+
+    def get_x_unique_banners_with_revenue_totals(self, campaign, quarter, banners_seen, x):
+        return self.get_queryset() \
+                   .filter(campaign=campaign, quarter=quarter, conversions__revenue__gt=0) \
+                   .exclude(banner_id__in=banners_seen) \
+                   .annotate(total_revenue=Sum('conversions__revenue')) \
+                   .order_by('-total_revenue') \
+                   .values_list('banner_id', flat=True).distinct()

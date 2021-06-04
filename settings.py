@@ -152,3 +152,10 @@ LOGGING = {
         },
     }
 }
+
+SCENARIOS = {
+    '1': 'X >= 10: Top 10 banners are shown',
+    '2': 'X in range(5,10): Top x banners are shown',
+    '3': 'X in range(1,5): Top x complemented with top clicks',
+    '4': 'X == 0: Top clicks with or without random banners'
+}

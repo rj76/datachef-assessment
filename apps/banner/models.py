@@ -6,7 +6,7 @@ from . import managers
 class Banner(models.Model):
     banner_id = models.PositiveIntegerField(primary_key=True, unique=True)
 
-    objects = models.Manager()
+    objects = managers.BannerManager()
 
 
 class Campaign(models.Model):
