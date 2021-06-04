@@ -37,7 +37,6 @@ class Batch:
                     campaign=campaign
                 )
 
-
     def import_clicks(self, quarter):
         file = '%s/data/%d/clicks_%d.csv' % (settings.BASE_DIR, quarter, quarter)
         num_exist = 0
@@ -50,15 +49,18 @@ class Batch:
                 banner = models.Banner.objects.get(banner_id=as_dict['banner_id'])
                 campaign = models.Campaign.objects.get(campaign_id=as_dict['campaign_id'])
 
-                impression = models.Impression.objects.get(
+                num_impressions = models.Impression.objects.filter(
                     quarter=quarter,
                     banner=banner,
                     campaign=campaign
-                )
+                ).count()
 
                 _, created = models.Click.objects.get_or_create(
                     click_id=as_dict['click_id'],
-                    impression=impression
+                    quarter=quarter,
+                    num_impressions=num_impressions,
+                    banner=banner,
+                    campaign=campaign,
                 )
 
                 if not created:
