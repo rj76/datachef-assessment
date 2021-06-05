@@ -20,13 +20,13 @@ class BannerManager(Manager):
 class ClickManager(Manager):
     def get_unique_banners_with_revenue(self, campaign, quarter, banners_seen):
         return self.get_queryset() \
-            .filter(campaign=campaign, quarter=quarter, conversion_revenue_sum=0) \
+            .filter(campaign=campaign, quarter=quarter, conversion_revenue_sum__gt=0) \
             .exclude(banner_id__in=banners_seen) \
             .values('banner_id').distinct()
 
     def get_top10_unique_banners_with_revenue_totals(self, campaign, quarter, banners_seen):
         return self.get_queryset() \
-            .filter(campaign=campaign, quarter=quarter, conversion_revenue_sum=0) \
+            .filter(campaign=campaign, quarter=quarter, conversion_revenue_sum__gt=0) \
             .exclude(banner_id__in=banners_seen) \
             .values('banner_id').distinct() \
             .order_by('-conversion_revenue_sum') \
@@ -34,7 +34,7 @@ class ClickManager(Manager):
 
     def get_x_unique_banners_with_revenue_totals(self, campaign, quarter, banners_seen, x):
         return self.get_queryset() \
-                   .filter(campaign=campaign, quarter=quarter, conversion_revenue_sum=0) \
+                   .filter(campaign=campaign, quarter=quarter, conversion_revenue_sum__gt=0) \
                    .exclude(banner_id__in=banners_seen) \
                    .order_by('-conversion_revenue_sum') \
-                   .values_list('banner_id', flat=True).distinct()
+                   .values_list('banner_id', flat=True).distinct()[:x]
