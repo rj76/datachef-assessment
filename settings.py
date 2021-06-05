@@ -158,3 +158,12 @@ SCENARIOS = {
     '3': 'X in range(1,5): Top x complemented with top clicks',
     '4': 'X == 0: Top clicks with or without random banners'
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+        'KEY_PREFIX': 'datachef',
+        'TIMEOUT': 3600 * 24,
+    }
+}

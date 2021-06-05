@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic.base import TemplateView
 
 from rest_framework.response import Response
@@ -14,6 +16,7 @@ class HomeView(TemplateView):
 
 
 class CampaignDetail(APIView):
+    @method_decorator(cache_page(60*60*24*14))
     def get(self, request, *args, **kwargs):
         campaign = get_object_or_404(models.Campaign, pk=kwargs['pk'])
         quarter = utils.get_current_quarter()
