@@ -10,7 +10,7 @@ SECRET_KEY = 'ff5t-9hz108ip@n+0u)-u)@1*j(c+n8-&nb5r6j6aag9l+n_hd'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'datachef.pedroja.tech']
+ALLOWED_HOSTS = ['127.0.0.1', 'datachef.pedroja.tech', '3.8.31.12']
 
 INTERNAL_IPS = [
     '127.0.0.1',
@@ -72,7 +72,7 @@ DATABASES = {
         'USER': 'datachef',
         'PASSWORD': 'datachef',
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '6432',
     }
 }
 
