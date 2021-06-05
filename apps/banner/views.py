@@ -20,7 +20,6 @@ class CampaignDetail(APIView):
     def get(self, request, *args, **kwargs):
         campaign = get_object_or_404(models.Campaign, pk=kwargs['pk'])
         quarter = request.GET.get('quarter', utils.get_current_quarter())
-        print('quarter: %s' % quarter)
         logger.info('quarter: %s' % quarter)
         client_ip = request.META['REMOTE_ADDR']
 
@@ -28,7 +27,6 @@ class CampaignDetail(APIView):
 
         # count banners with revenue
         num_banners = len(redis.get_unique_banners_with_revenue(campaign, quarter, last_banner_seen))
-        print('num_banners: %d' % num_banners)
         logger.info('num_banners: %d' % num_banners)
 
         if num_banners >= 10:
@@ -66,8 +64,7 @@ class CampaignDetail(APIView):
                 extra_banner_ids = redis.get_banner_ids_by_click_count(exclude)[:(5-num_banners)]
                 banner_ids += utils.qs_to_list(extra_banner_ids)
 
-                logger.info(' added %d extra banners from top clicks' % extra_banner_ids)
-
+                logger.info('  added %d extra banners from top clicks' % len(extra_banner_ids))
 
             self.store_banners_seen(banner_ids, client_ip)
             return self.return_response(banner_ids, scenario, num_banners)
@@ -89,7 +86,7 @@ class CampaignDetail(APIView):
             qs = redis.get_random_banner_ids(num_random, last_banner_seen)
             random_banners = utils.qs_to_list(qs)
             banner_ids += random_banners
-            logger.info('  adding %d random banners')
+            logger.info('  adding %d random banners' % len(random_banners))
         else:
             qs = redis.get_random_banner_ids(5, last_banner_seen)
             banner_ids = utils.qs_to_list(qs)

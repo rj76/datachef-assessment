@@ -1,3 +1,4 @@
+import logging
 import pytest
 import random
 
@@ -8,6 +9,8 @@ from rest_framework import status
 
 from . import factories
 from apps.banner import models, utils, redis
+
+logger = logging.getLogger('apps.banner')
 
 
 @pytest.mark.django_db
@@ -50,7 +53,7 @@ class TestApi:
 
     def test_range_1_5(self, client):
         # x between 1 and 5 banners with revenue, should return top x banners
-        num_banners = random.randrange(1, 4, 1)
+        num_banners = random.randrange(1, 5, 1)
         campaign = factories.CampaignFactory()
         banners = [factories.BannerFactory(banner_id=i) for i in range(1, 11)]
 
@@ -65,11 +68,13 @@ class TestApi:
 
             # create extra clicks?
             if len(extra_banner_ids) < clicks_needed:
-                max_id = num_banners + 10
+                print('  test: creating %d extra clicks' % (clicks_needed+5))
+                max_id = num_banners + 100
 
                 for i in range(0, clicks_needed+5):
                     available_banners = [banner for banner in banners if banner.banner_id not in extra_banner_ids]
                     if not available_banners:
+                        print('  test: no more banners, break')
                         break
 
                     extra_banner_ids.append(available_banners[0].banner_id)
@@ -79,6 +84,7 @@ class TestApi:
                         banner=available_banners[0],
                         campaign=campaign,
                     )
+                    print('  test: create click')
 
                     max_id += 1
 

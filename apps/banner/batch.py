@@ -90,7 +90,7 @@ class Batch:
                 try:
                     conversion = models.Conversion.objects.get(conversion_id=as_dict['conversion_id'])
                     conversion.click = click
-                    conversion.revenue=float(as_dict['revenue'])
+                    conversion.revenue = float(as_dict['revenue'])
                     conversion.save()
 
                     num_exist += 1
