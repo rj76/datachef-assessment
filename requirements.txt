@@ -18,3 +18,5 @@ pytest-flake8==1.0.6
 psycopg2-binary
 
 daphne
+
+locust==1.5.3
