@@ -1,45 +1,26 @@
-import json
-from io import StringIO
 import os
-
 import django
-from django.conf import settings
-from django.core import management
-
-from locust import HttpLocust, TaskSet
+from locust import HttpUser, task, between
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
-
 django.setup()
 
-out = StringIO()
-management.call_command(
-    'show_urls',
-    format='json',
-    stdout=out
-)
 
-patterns = json.loads(out.getvalue())
+class User(HttpUser):
+    # host = 'http://127.0.0.1:9000'
+    host = 'https://datachef.pedroja.tech'
+    def on_start(self):
+        """ Run on start for every Locust hatched """
+        self.client.headers['Referer'] = self.client.base_url
+        self.client.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (' \
+                                            'KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36 '
 
-headers = {
-    'User-Agent': 'datachef'
-}
+    def get_campaign_pks(self):
+        from apps.banner import models
 
+        return [c.campaign_id for c in models.Campaign.objects.all().order_by('?')[:50]]
 
-def factory(path):
-    def _locust(locust):
-        locust.client.get(path, headers=headers)
-    return _locust
-
-
-alltasks = {factory(pattern['url']): 1 for pattern in patterns if '-list' in pattern['name']}
-
-
-class UserBehavior(TaskSet):
-    tasks = alltasks
-
-
-class WebsiteUser(HttpLocust):
-    task_set = UserBehavior
-    min_wait = 1000
-    max_wait = 5000
+    @task(1)
+    def get_campaigns(self):
+        for campaign_id in self.get_campaign_pks():
+            self.client.get('/campaign/%d/' % campaign_id)
