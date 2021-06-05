@@ -29,7 +29,7 @@ class Click(models.Model):
     num_impressions = models.PositiveIntegerField(default=0)
     banner = models.ForeignKey(Banner, on_delete=models.CASCADE, related_name='clicks', null=True)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='clicks', null=True)
-    conversion_revenue_sum = models.DecimalField(max_digits=10, decimal_places=8, default=0, db_index=True)
+    conversion_revenue_sum = models.DecimalField(max_digits=20, decimal_places=8, default=0, db_index=True)
 
     objects = managers.ClickManager()
 
