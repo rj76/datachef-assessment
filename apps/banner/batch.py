@@ -87,14 +87,19 @@ class Batch:
                 as_dict = dict(zip(headers, row))
                 click = models.Click.objects.get(click_id=as_dict['click_id'])
 
-                _, created = models.Conversion.objects.get_or_create(
-                    conversion_id=as_dict['conversion_id'],
-                    click=click,
-                    revenue=float(as_dict['revenue'])
-                )
+                try:
+                    conversion = models.Conversion.objects.get(conversion_id=as_dict['conversion_id'])
+                    conversion.click = click
+                    conversion.revenue=float(as_dict['revenue'])
+                    conversion.save()
 
-                if not created:
                     num_exist += 1
                     logger.debug('duplicate conversion_id: %s' % as_dict['conversion_id'])
+                except models.Conversion.DoesNotExist:
+                    models.Conversion.objects.create(
+                        conversion_id=as_dict['conversion_id'],
+                        click=click,
+                        revenue=float(as_dict['revenue']
+                    )
 
         logger.info('%d duplicate conversions' % num_exist)
