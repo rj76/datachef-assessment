@@ -15,8 +15,8 @@ class HomeView(TemplateView):
 class CampaignDetail(APIView):
     def get(self, request, *args, **kwargs):
         campaign = get_object_or_404(models.Campaign, pk=kwargs['pk'])
-        quarter = utils.get_current_quarter()
-        quarter = 1
+        quarter = request.GET.get('quarter', utils.get_current_quarter())
+        print('quarter: %s' % quarter)
         client_ip = request.META['REMOTE_ADDR']
 
         last_banner_seen = redis.get_last_banners_for_ip(client_ip)

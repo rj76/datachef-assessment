@@ -24,7 +24,7 @@ class TestApi:
         # fill redis
         redis.fill_redis()
 
-        response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
+        response = client.get('%s?quarter=1' % reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
         assert len(response.data['banners']) == 10
@@ -42,7 +42,7 @@ class TestApi:
         # fill redis
         redis.fill_redis()
 
-        response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
+        response = client.get('%s?quarter=1' % reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
         assert len(response.data['banners']) == num_banners
@@ -85,7 +85,7 @@ class TestApi:
         # fill redis
         redis.fill_redis()
 
-        response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
+        response = client.get('%s?quarter=1' % reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
         assert len(response.data['banners']) == 5
@@ -114,7 +114,7 @@ class TestApi:
         # fill redis
         redis.fill_redis()
 
-        response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
+        response = client.get('%s?quarter=1' % reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
         assert len(response.data['banners']) == 5
@@ -143,7 +143,7 @@ class TestApi:
         # fill redis
         redis.fill_redis()
 
-        response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
+        response = client.get('%s?quarter=1' % reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
         assert len(response.data['banners']) == 5
@@ -159,7 +159,7 @@ class TestApi:
         # fill redis
         redis.fill_redis()
 
-        response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
+        response = client.get('%s?quarter=1' % reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
         assert len(response.data['banners']) == 5
