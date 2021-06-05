@@ -19,6 +19,4 @@ psycopg2-binary
 
 daphne
 
-locust==1.5.3
-
-python3-memcached==1.51
+redis3==3.5.2.2

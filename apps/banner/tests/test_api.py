@@ -7,7 +7,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from . import factories
-from apps.banner import models, utils
+from apps.banner import models, utils, redis
 
 
 @pytest.mark.django_db
@@ -17,14 +17,18 @@ class TestApi:
         num_banners = random.randrange(10, 20, 1)
         campaign = factories.CampaignFactory()
         banners = [factories.BannerFactory(banner_id=i) for i in range(1, 101)]
+
         # create database entries
         self.create_data_with_revenue(campaign, num_banners, banners)
+
+        # fill redis
+        redis.fill_redis()
 
         response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
-        assert response.data['scenario'] == settings.SCENARIOS['1']
         assert len(response.data['banners']) == 10
+        assert response.data['scenario'] == settings.SCENARIOS['1']
 
     def test_range_5_10(self, client):
         # x between 5 and 10 banners with revenue, should return top x banners
@@ -35,15 +39,18 @@ class TestApi:
         # create database entries
         self.create_data_with_revenue(campaign, num_banners, banners)
 
+        # fill redis
+        redis.fill_redis()
+
         response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
-        assert response.data['scenario'] == settings.SCENARIOS['2']
         assert len(response.data['banners']) == num_banners
+        assert response.data['scenario'] == settings.SCENARIOS['2']
 
     def test_range_1_5(self, client):
         # x between 1 and 5 banners with revenue, should return top x banners
-        num_banners = random.randrange(1, 5, 1)
+        num_banners = random.randrange(1, 4, 1)
         campaign = factories.CampaignFactory()
         banners = [factories.BannerFactory(banner_id=i) for i in range(1, 11)]
 
@@ -53,8 +60,8 @@ class TestApi:
         if num_banners < 5:
             # add clicks
             clicks_needed = 5 - num_banners
-            exclude_banner_ids = models.Click.objects.get_unique_banners_with_revenue(campaign, 1, [])
-            extra_banner_ids = utils.qs_to_list(models.Banner.objects.get_banner_ids_by_click_count(exclude_banner_ids))
+            exclude_banner_ids = redis.get_unique_banners_with_revenue(campaign, 1, [])
+            extra_banner_ids = utils.qs_to_list(redis.get_banner_ids_by_click_count(exclude_banner_ids))
 
             # create extra clicks?
             if len(extra_banner_ids) < clicks_needed:
@@ -75,11 +82,14 @@ class TestApi:
 
                     max_id += 1
 
+        # fill redis
+        redis.fill_redis()
+
         response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
-        assert response.data['scenario'] == settings.SCENARIOS['3']
         assert len(response.data['banners']) == 5
+        assert response.data['scenario'] == settings.SCENARIOS['3']
 
     def test_no_banners_with_revenue_with_enough_clicks(self, client):
         # Show the top5 banners based on clicks.
@@ -101,11 +111,14 @@ class TestApi:
             count = len(models.Banner.objects.get_banner_ids_by_click_count([]))
             i += 1
 
+        # fill redis
+        redis.fill_redis()
+
         response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
-        assert response.data['scenario'] == settings.SCENARIOS['4']
         assert len(response.data['banners']) == 5
+        assert response.data['scenario'] == settings.SCENARIOS['4']
 
     def test_no_banners_with_revenue_not_enough_clicks(self, client):
         # Show the top5 banners based on clicks.
@@ -127,11 +140,14 @@ class TestApi:
             count = len(models.Banner.objects.get_banner_ids_by_click_count([]))
             i += 1
 
+        # fill redis
+        redis.fill_redis()
+
         response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
-        assert response.data['scenario'] == settings.SCENARIOS['4']
         assert len(response.data['banners']) == 5
+        assert response.data['scenario'] == settings.SCENARIOS['4']
 
     def test_no_banners_with_revenue_no_clicks(self, client):
         # Show the top5 banners based on clicks.
@@ -140,11 +156,14 @@ class TestApi:
         campaign = factories.CampaignFactory()
         [factories.BannerFactory(banner_id=i) for i in range(1, 11)]
 
+        # fill redis
+        redis.fill_redis()
+
         response = client.get(reverse('campaign', kwargs={'pk': campaign.campaign_id}))
         assert response.status_code == status.HTTP_200_OK
 
-        assert response.data['scenario'] == settings.SCENARIOS['4']
         assert len(response.data['banners']) == 5
+        assert response.data['scenario'] == settings.SCENARIOS['4']
 
     def create_data_with_revenue(self, campaign, num_banners, banners):
         i = count = 0

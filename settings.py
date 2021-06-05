@@ -72,7 +72,7 @@ DATABASES = {
         'USER': 'datachef',
         'PASSWORD': 'datachef',
         'HOST': 'localhost',
-        'PORT': '6432',
+        'PORT': '5432',
     }
 }
 
@@ -159,11 +159,8 @@ SCENARIOS = {
     '4': 'X == 0: Top clicks with or without random banners'
 }
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-        'KEY_PREFIX': 'datachef',
-        'TIMEOUT': 3600 * 24,
-    }
-}
+REDIS_PREFIX_RANDOM_BANNERS = 'random'
+REDIS_PREFIX_UNIQUE_WITH_REVENUE = 'unique-with-revenue'
+REDIS_PREFIX_TOP10_BY_CLICKS = 'top10-by-clicks'
+REDIS_PREFIX_TOP10_BY_REVENUE = 'top10-by-revenue'
+REDIS_PREFIX_LAST_BANNER_FOR_IP = 'ip-banner'
