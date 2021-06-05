@@ -34,8 +34,6 @@ class CampaignDetail(APIView):
         # count banners with revenue
         num_banners = len(models.Click.objects.get_unique_banners_with_revenue(campaign, quarter, last_banner_seen))
 
-        banner_ids = []
-        scenario = ''
         if num_banners >= 10:
             scenario = settings.SCENARIOS['1']
             banner_ids = utils.qs_to_list(models.Click.objects.get_top10_unique_banners_with_revenue_totals(
