@@ -55,17 +55,24 @@ class Batch:
                     campaign=campaign
                 ).count()
 
-                _, created = models.Click.objects.get_or_create(
-                    click_id=as_dict['click_id'],
-                    quarter=quarter,
-                    num_impressions=num_impressions,
-                    banner=banner,
-                    campaign=campaign,
-                )
+                try:
+                    click = models.Click.objects.get(click_id=as_dict['click_id'])
+                    click.quarter = quarter
+                    click.num_impressions = num_impressions
+                    click.banner = banner
+                    click.campaign = campaign
+                    click.save()
 
-                if not created:
                     num_exist += 1
                     logger.debug('duplicate click_id: %s' % as_dict['click_id'])
+                except models.Click.DoesNotExist:
+                    models.Click.objects.create(
+                        click_id=as_dict['click_id'],
+                        quarter=quarter,
+                        num_impressions=num_impressions,
+                        banner=banner,
+                        campaign=campaign,
+                    )
 
         logger.info('%d duplicate clicks' % num_exist)
 
