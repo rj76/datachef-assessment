@@ -61,12 +61,15 @@ class TestApi:
                 max_id = num_banners + 10
 
                 for i in range(0, clicks_needed+5):
-                    banner = [banner for banner in banners if banner.banner_id not in extra_banner_ids][0]
-                    extra_banner_ids.append(banner.banner_id)
+                    available_banners = [banner for banner in banners if banner.banner_id not in extra_banner_ids]
+                    if not available_banners:
+                        break
+
+                    extra_banner_ids.append(available_banners[0].banner_id)
 
                     factories.ClickFactory(
                         click_id=max_id+1,
-                        banner=banner,
+                        banner=available_banners[0],
                         campaign=campaign,
                     )
 
@@ -159,5 +162,6 @@ class TestApi:
                 revenue=1
             )
 
+            utils.aggregate_revenue()
             count = len(models.Click.objects.get_unique_banners_with_revenue(campaign, 1, []))
             i += 1
