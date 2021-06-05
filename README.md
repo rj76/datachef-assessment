@@ -18,4 +18,4 @@ Import datasets
 
 Tests
 ------
-- run `pytest apps`
+- run `pytest`
