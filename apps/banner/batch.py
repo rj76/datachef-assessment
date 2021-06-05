@@ -99,7 +99,7 @@ class Batch:
                     models.Conversion.objects.create(
                         conversion_id=as_dict['conversion_id'],
                         click=click,
-                        revenue=float(as_dict['revenue']
+                        revenue=float(as_dict['revenue'])
                     )
 
         logger.info('%d duplicate conversions' % num_exist)
