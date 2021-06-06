@@ -29,9 +29,7 @@
         </p>
         <div data-bind="if: hasBanners">
             <div data-bind="foreach: banners">
-                <p>
-                    <img data-bind="attr: { src: '/static/banner/img/banners/image_' + $data + '.png' }">
-                </p>
+                <img data-bind="attr: { src: '/static/banner/img/banners/image_' + $data + '.png' }">
             </div>
         </div>
     </div>
