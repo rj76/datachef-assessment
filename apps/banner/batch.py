@@ -9,14 +9,25 @@ logger = logging.getLogger('apps.banner')
 
 
 class Batch:
-    def import_all(self):
+    test = False
+
+    def import_all(self, test=False):
+        if test:
+            self.test = True
+            self.import_impressions(1)
+            self.import_clicks(1)
+            self.import_conversions(1)
+
+            return
+
         for quarter in range(1, 5):
             self.import_impressions(quarter)
             self.import_clicks(quarter)
             self.import_conversions(quarter)
 
     def import_impressions(self, quarter):
-        file = '%s/data/%d/impressions_%d.csv' % (settings.BASE_DIR, quarter, quarter)
+        file = '%s/data/test/impressions.csv' % settings.BASE_DIR if self.test else '%s/data/%d/impressions_%d.csv' % (
+            settings.BASE_DIR, quarter, quarter)
 
         with open(file) as csvfile:
             reader = csv.reader(csvfile)
@@ -38,7 +49,8 @@ class Batch:
                 )
 
     def import_clicks(self, quarter):
-        file = '%s/data/%d/clicks_%d.csv' % (settings.BASE_DIR, quarter, quarter)
+        file = '%s/data/test/clicks.csv' % settings.BASE_DIR if self.test else '%s/data/%d/clicks_%d.csv' % (
+            settings.BASE_DIR, quarter, quarter)
         num_exist = 0
 
         with open(file) as csvfile:
@@ -77,7 +89,8 @@ class Batch:
         logger.info('%d duplicate clicks' % num_exist)
 
     def import_conversions(self, quarter):
-        file = '%s/data/%d/conversions_%d.csv' % (settings.BASE_DIR, quarter, quarter)
+        file = '%s/data/test/conversions.csv' % settings.BASE_DIR if self.test else '%s/data/%d/conversions_%d.csv' % (
+            settings.BASE_DIR, quarter, quarter)
         num_exist = 0
 
         with open(file) as csvfile:
