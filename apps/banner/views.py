@@ -35,8 +35,8 @@ class CampaignDetail(APIView):
                 10, campaign, quarter, last_banner_seen
             ))
 
-            logger.info('scenario 1: %s' % scenario)
-            self.store_banners_seen(banner_ids, client_ip)
+            logger.info('scenario 1: %s, returning %d banners' % (scenario, len(banner_ids)))
+            redis.store_last_banners_for_ip(banner_ids, client_ip)
             return self.return_response(banner_ids, scenario, num_banners)
 
         if num_banners in range(5, 10):
@@ -45,8 +45,8 @@ class CampaignDetail(APIView):
                 num_banners, campaign, quarter, last_banner_seen
             ))
 
-            logger.info('scenario 2: %s' % scenario)
-            self.store_banners_seen(banner_ids, client_ip)
+            logger.info('scenario 2: %s, returning %d banners' % (scenario, len(banner_ids)))
+            redis.store_last_banners_for_ip(banner_ids, client_ip)
             return self.return_response(banner_ids, scenario, num_banners)
 
         if num_banners in range(1, 5):
@@ -66,7 +66,8 @@ class CampaignDetail(APIView):
 
                 logger.info('  added %d extra banners from top clicks' % len(extra_banner_ids))
 
-            self.store_banners_seen(banner_ids, client_ip)
+            logger.info('scenario 3: %s, returning %d banners' % (scenario, len(banner_ids)))
+            redis.store_last_banners_for_ip(banner_ids, client_ip)
             return self.return_response(banner_ids, scenario, num_banners)
 
         scenario = settings.SCENARIOS['4']
@@ -92,7 +93,10 @@ class CampaignDetail(APIView):
             banner_ids = utils.qs_to_list(qs)
             logger.info('  using 5 random banners')
 
-        self.store_banners_seen(banner_ids, client_ip)
+        if not banner_ids:
+            logger.error('no banners could be found?!')
+
+        redis.store_last_banners_for_ip(banner_ids, client_ip)
         return self.return_response(banner_ids, scenario, num_banners)
 
     def return_response(self, banner_ids, scenario, num_banners):
@@ -101,6 +105,3 @@ class CampaignDetail(APIView):
             'scenario': scenario,
             'num_banners': num_banners
         })
-
-    def store_banners_seen(self, banner_ids, ip):
-        redis.store_last_banners_for_ip(banner_ids, ip)
